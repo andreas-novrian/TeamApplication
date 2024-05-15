@@ -7,32 +7,22 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.ppb.teamapplication.databinding.ActivityMainBinding
 import com.ppb.teamapplication.view.TeamViewModel
 import com.ppb.teamapplication.view.TeamViewModelFactory
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<TeamViewModel> {
-        TeamViewModelFactory(
-            (application as TeamApplication).localTeamRepository,
-            (application as TeamApplication).remoteTeamRepository
-        )
-    }
+    private lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        viewModel.teamsFromAPI.observe(this) { teamsResponse ->
-            Log.d("MYTAG", teamsResponse.teams.toString())
-        }
-        viewModel.teamsFromDB.observe(this) {teams ->
-            Log.d("MYTAGDB", teams.toString())
-        }
-        viewModel.getTeamsFromAPI()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val navHost = supportFragmentManager
+            .findFragmentById(binding.fragmentContainerView.id) as NavHostFragment
+        val navController = navHost.navController
+        binding.bnvTeam.setupWithNavController(navController)
     }
 }
